@@ -6,27 +6,28 @@ Created on Sun Nov 28 18:27:32 2021
 for academic purposes only 
 """
 
-from matplotlib import pyplot 
+from matplotlib import pyplot as plt
 import numpy as np 
 from PIL import Image as im
 import jpeg_functions as fc 
 import huffman_functions as hj 
 # Quantization matrix 
-Q =50; # quality  factor of JPEG in %
+Q =75; # quality  factor of JPEG in %
 
 Q_matrix = fc.quantization_matrix(Q) # Quantization matrix 
   
 # Open the image (obtain an RGB image)
-image_origin = im.open("ISAE_Logo_SEIS_Ground_2.PNG")  
+image_origin = im.open("ISAE_Logo_SEIS_clr.PNG")  
 image_origin_eval = np.array(image_origin)
 
 # Transform into YCrBR 
 image_ycbcr = image_origin.convert('YCbCr') 
 image_ycbcr_eval= np.array(image_ycbcr)
  
-#  Troncate the image (to make simulations faster)
+#  Truncate the image (to make simulations faster)
 image_trunc = image_ycbcr_eval[644:724,624:704] 
-# pyplot.imshow(image_trunc) 
+# plt.imshow(image_trunc) 
+# plt.show()
 
 # Initializations
 n_row = np.size(image_trunc,0) # Number of rows 
@@ -75,12 +76,12 @@ for i_plane in range(0,3):
     image_DC_DPCM = image_DC[1:N_blocks,i_plane] - image_DC[0:N_blocks-1,i_plane]
     image_DC_0 = image_DC[0,i_plane] # first DC constant (not compressed)
     
-    #  Map the resulting values in categoeries and amplitudes
-    image_DC_DPCM_cat = fc.DC_category_vect(image_DC_DPCM) 
-    image_DC_DPCM_amp = fc.DC_amplitude_vect(image_DC_DPCM) 
+    #  Map the resulting values in categories and amplitudes
+    image_DC_DPCM_cat = fc.DC_category_vect(image_DC_DPCM)  # NOTE: CATEGORY
+    image_DC_DPCM_amp = fc.DC_amplitude_vect(image_DC_DPCM) # NOTE: AMPLITUDE
     list_image_cat_DC = np.ndarray.tolist(image_DC_DPCM_cat)  # create a list of DC components
     
-    
+    # TODO
     # --------------------------Students work on DC components --------------------------------- 
     # Compress with Huffman 
     # Decompress with Huffman 
@@ -89,19 +90,21 @@ for i_plane in range(0,3):
    
     # ---------------------------------------------------------------------------------------------
     
+
     # ---- AC components processing    
     # RLE coding over AC components  
     AC_coeff = image_AC[:,i_plane] 
-    [AC_coeff_rl, AC_coeff_amp]= fc.RLE(AC_coeff)
-    list_image_rl_AC = np.ndarray.tolist(AC_coeff_rl)
-    
+    [AC_coeff_rl, AC_coeff_amp]= fc.RLE(AC_coeff)       # NOTE: 
+    list_image_rl_AC = np.ndarray.tolist(AC_coeff_rl)   # NOTE: 
+
+    # TODO
     # --------------------------Students work on AC components ---------------------------------
     # Compress with Huffman 
     # Decompress with Huffman 
     # Rdecompressed_cat_AC should be the output of your Huffman decompressor 
     decompressed_cat_AC = list_image_rl_AC  
     
-   
+    # TODO
     # --------------------------------Students work on the nb_bit/ pixel ---------------------
  
      
@@ -152,7 +155,7 @@ image_ycbcr_rec = im.fromarray(image_plane_rec,'YCbCr')
 image_rec =  image_ycbcr_rec.convert('RGB')
 
 # Plot the image 
-pyplot.imshow(image_rec) 
-
+plt.imshow(image_rec) 
+plt.show()
  
  

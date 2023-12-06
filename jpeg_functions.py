@@ -6,8 +6,6 @@ Created on Tue May 18 09:51:38 2021
 @author: m.benammar
 """
 import numpy as np 
-import numpy.matlib
-
 
 zg_matrix = np.array([[1,2,6,7,15,16,28,29],
     [3,5,8,14,17,27,30,43],
@@ -37,7 +35,8 @@ def DCT(M_ij):
     n_col = np.size(M_ij,1)
 
     C_u = np.concatenate((np.array([1.0/np.sqrt(2)]), np.ones(n_row -1)),axis = 0)
-    C_u_rep = np.matlib.repmat(C_u, n_row, 1) 
+    # C_u_rep = np.matlib.repmat(C_u, n_row, 1) 
+    C_u_rep = np.tile(C_u, (n_row, 1)) 
     C_uv = 1/np.sqrt(2*n_row)*C_u_rep*np.transpose(C_u_rep )
      
     T = np.zeros((n_row, n_col)) 
@@ -60,7 +59,8 @@ def DCT_inv(T_uv):
     n_col = np.size(T_uv,1)
 
     C_i = np.concatenate((np.array([1.0/np.sqrt(2)]), np.ones(n_row -1)),axis = 0)
-    C_i_rep = np.matlib.repmat(C_i, n_row, 1) 
+    # C_i_rep = np.matlib.repmat(C_i, n_row, 1) 
+    C_i_rep = np.tile(C_i, (n_row, 1)) 
     C_ij = 1/np.sqrt(2*n_row)*C_i_rep*np.transpose(C_i_rep )
      
     M = np.zeros((n_row, n_col)) 
