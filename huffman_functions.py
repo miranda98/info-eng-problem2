@@ -103,15 +103,16 @@ def build_decoding_dict(encoding_dict):
   # return {y:x for x,y in encoding_dict.items()} # OK too
 
 def decompress(bits, decoding_dict):
-   prefix = ""
-   result = []
-   for bit in bits:
-      prefix += bit
-      if prefix in decoding_dict:
-          result.append(decoding_dict[prefix])
-          prefix = ""
-   assert prefix == "" # must finish last codeword
-   return result   # converts list of chars to a string
+    prefix = ""
+    result = []
+    for bit in bits:
+        prefix += bit
+        if prefix in decoding_dict:
+            result.append(decoding_dict[prefix])
+            prefix = ""
+
+    assert prefix == "" # must finish last codeword
+    return result   # converts list of chars to a string
 
 def computeEntropy(probabilities) : 
     sum = 0

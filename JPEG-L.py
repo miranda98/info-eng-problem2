@@ -86,14 +86,21 @@ for i_plane in range(0,3):
     dc_cat_set = list(set(list_image_cat_DC))
     [dc_alph, num_chars] = hj.dict_freq_numbers(list_image_cat_DC, dc_cat_set)
     dc_huff_tree = hj.build_huffman_tree(dc_alph)
-    dc_encoded = hj.generate_code(dc_huff_tree)
+    dc_encoding_dict = hj.generate_code(dc_huff_tree)
+    dc_compressed = hj.compress(text=list_image_cat_DC, encoding_dict=dc_encoding_dict)
     
-    print(f"DC: {dc_encoded}")
+    print(f"DC ENCODE: {dc_encoding_dict}")
+    print(f"DC TREE: {dc_huff_tree}")
+    print(f"DC COMPRESSED: {dc_compressed}")
 
     
-    # Decompress with Huffman 
-    # decompressed_cat_DC should be the output of your Huffman decompressor 
-    decompressed_cat_DC = list_image_cat_DC 
+    # Decompress with Huffman
+    dc_decoding_dict = {v: k for k, v in dc_encoding_dict.items()}
+    decompressed_cat_DC = hj.decompress(bits=dc_compressed, decoding_dict=dc_decoding_dict)
+    
+    print(f"DC DECODED: {decompressed_cat_DC}")
+    
+    print(list_image_cat_DC == decompressed_cat_DC)
    
     # ---------------------------------------------------------------------------------------------
     
@@ -112,10 +119,11 @@ for i_plane in range(0,3):
     ac_huff_tree = hj.build_huffman_tree(ac_alph)
     ac_encoded = hj.generate_code_2(ac_huff_tree)
     
-    print(f"AC: {ac_encoded}")
+    # print(f"AC TREE: {ac_huff_tree}")
+    # print(f"AC: {ac_encoded}")
     
     # Decompress with Huffman 
-    # Rdecompressed_cat_AC should be the output of your Huffman decompressor 
+    # Decompressed_cat_AC should be the output of your Huffman decompressor 
     decompressed_cat_AC = list_image_rl_AC  
     
    
@@ -169,8 +177,8 @@ image_ycbcr_rec = im.fromarray(image_plane_rec,'YCbCr')
 image_rec =  image_ycbcr_rec.convert('RGB')
 
 # Plot the image 
-pyplot.imshow(image_rec)
-pyplot.show()
+# pyplot.imshow(image_rec)
+# pyplot.show()
 
  
  
