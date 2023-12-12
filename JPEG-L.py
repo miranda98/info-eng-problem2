@@ -83,11 +83,13 @@ for i_plane in range(0,3):
     
     # --------------------------Students work on DC components --------------------------------- 
     # Compress with Huffman
-    # Get list of categories
     dc_cat_set = list(set(list_image_cat_DC))
     [dc_alph, num_chars] = hj.dict_freq_numbers(list_image_cat_DC, dc_cat_set)
     dc_huff_tree = hj.build_huffman_tree(dc_alph)
     dc_encoded = hj.generate_code(dc_huff_tree)
+    
+    print(f"DC: {dc_encoded}")
+
     
     # Decompress with Huffman 
     # decompressed_cat_DC should be the output of your Huffman decompressor 
@@ -102,7 +104,16 @@ for i_plane in range(0,3):
     list_image_rl_AC = np.ndarray.tolist(AC_coeff_rl)
     
     # --------------------------Students work on AC components ---------------------------------
-    # Compress with Huffman 
+    # Compress with Huffman
+    ac_tuples = [tuple(x) for x in AC_coeff_rl]
+    ac_unique_tuples = list(set(ac_tuples))
+    
+    [ac_alph, ac_num_chars] = hj.dict_freq_numbers_2(ac_tuples, ac_unique_tuples)
+    ac_huff_tree = hj.build_huffman_tree(ac_alph)
+    ac_encoded = hj.generate_code_2(ac_huff_tree)
+    
+    print(f"AC: {ac_encoded}")
+    
     # Decompress with Huffman 
     # Rdecompressed_cat_AC should be the output of your Huffman decompressor 
     decompressed_cat_AC = list_image_rl_AC  

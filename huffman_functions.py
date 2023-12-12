@@ -24,12 +24,10 @@ def dict_freq_numbers_2(list_image_rl_AC,alphabet_cat_AC):
     # Image_cat and Alphabet have to be lists 
     nbr_chr = 0 
     dicoAlphabet= {}
-    for letter_i in alphabet_cat_AC:
-       for letter_j in alphabet_cat_AC:
-           nbr_chr += list_image_rl_AC.count([letter_i,letter_j])  
-    for letter_i in alphabet_cat_AC:    
-        for letter_j in alphabet_cat_AC:
-            dicoAlphabet[tuple([letter_i,letter_j])] = float(  list_image_rl_AC.count([letter_i,letter_j])   )/nbr_chr
+    for tuple_i in alphabet_cat_AC:
+        nbr_chr += list_image_rl_AC.count(tuple_i)  
+    for tuple_i in alphabet_cat_AC:
+        dicoAlphabet[tuple_i] = float(  list_image_rl_AC.count(tuple_i)   )/nbr_chr
 
     return  [dicoAlphabet,nbr_chr]
 
@@ -77,7 +75,7 @@ def generate_code_2(huff_tree, prefix=""):
         and a prefix of encodings.
         returns a dictionary where characters are
         keys and associated binary strings are values."""
-    if isinstance(huff_tree[0], int): # a leaf
+    if isinstance(huff_tree, tuple): # a leaf
         return {huff_tree: prefix}
     else:
         lchild, rchild = huff_tree[0], huff_tree[1]
