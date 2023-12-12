@@ -74,19 +74,31 @@ for i_plane in range(0,3):
     # ---- DC components processing    
     # DPCM coding over DC components 
     image_DC_DPCM = image_DC[1:N_blocks,i_plane] - image_DC[0:N_blocks-1,i_plane]
+    # print(image_DC_DPCM)
+
     image_DC_0 = image_DC[0,i_plane] # first DC constant (not compressed)
     
     #  Map the resulting values in categories and amplitudes
     image_DC_DPCM_cat = fc.DC_category_vect(image_DC_DPCM)  # NOTE: CATEGORY
     image_DC_DPCM_amp = fc.DC_amplitude_vect(image_DC_DPCM) # NOTE: AMPLITUDE
+
+    print(image_DC_DPCM_cat)
+    print(image_DC_DPCM_amp)
+
     list_image_cat_DC = np.ndarray.tolist(image_DC_DPCM_cat)  # create a list of DC components
-    
-    # TODO
     # --------------------------Students work on DC components --------------------------------- 
-    # Compress with Huffman 
-    # Decompress with Huffman 
-    # decompressed_cat_DC should be the output of your Huffman decompressor 
-    decompressed_cat_DC = list_image_cat_DC 
+    # TODO: Compress with Huffman - Apply Huffman code on categories of the DC components given the
+    # categories, amplitudes of the DC components and the amplitudes are already mapped into a binary stream
+    # print(image_DC_DPCM_amp)
+    # compressed_DC = hj.compress(text=list_image_cat_DC, encoding_dict=image_DC_DPCM_amp)
+    # print(compressed_DC)
+    # compressed_DC_list = np.ndarray.tolist(list_image_cat_DC)
+
+    # print(image_DC_DPCM_amp)
+    # amp_dict = dict(enumerate(image_DC_DPCM_amp))
+    # print(amp_dict)
+    # TODO: Decompress with Huffman - decompressed_cat_DC should be the output of your Huffman decompressor 
+    decompressed_cat_DC = hj.decompress(bits=list_image_cat_DC, decoding_dict=amp_dict) # list_image_cat_DC 
    
     # ---------------------------------------------------------------------------------------------
     
@@ -94,14 +106,21 @@ for i_plane in range(0,3):
     # ---- AC components processing    
     # RLE coding over AC components  
     AC_coeff = image_AC[:,i_plane] 
-    [AC_coeff_rl, AC_coeff_amp]= fc.RLE(AC_coeff)       # NOTE: 
-    list_image_rl_AC = np.ndarray.tolist(AC_coeff_rl)   # NOTE: 
+    [AC_coeff_rl, AC_coeff_amp]= fc.RLE(AC_coeff)       # NOTE: Transforms AC stream → stream of runs and values (r, v), AC_coeff_amp = a(v), already binary streams
+    list_image_rl_AC = np.ndarray.tolist(AC_coeff_rl)   # NOTE: Transform length values v in (r,v) using categories c(v) and amplitudes a(v)
 
     # TODO
     # --------------------------Students work on AC components ---------------------------------
-    # Compress with Huffman 
-    # Decompress with Huffman 
-    # Rdecompressed_cat_AC should be the output of your Huffman decompressor 
+    # Compress the run-length pairs using 2D Huffman code
+    # given that the amplitudes of the length a(v) are already binary streams
+  
+    # compressed_AC = hj.compress_2(text=list_image_rl_AC, encoding_dict=AC_coeff_amp)
+    # print(compressed_AC)
+
+    # Decompress with Huffman
+
+
+    # decompressed_cat_AC should be the output of your Huffman decompressor 
     decompressed_cat_AC = list_image_rl_AC  
     
     # TODO
