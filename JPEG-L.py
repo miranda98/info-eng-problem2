@@ -6,13 +6,13 @@ Created on Sun Nov 28 18:27:32 2021
 for academic purposes only 
 """
 
-from matplotlib import pyplot as plt
+from matplotlib import pyplot 
 import numpy as np 
 from PIL import Image as im
 import jpeg_functions as fc 
 import huffman_functions as hj 
 # Quantization matrix 
-Q =75; # quality  factor of JPEG in %
+Q =50; # quality  factor of JPEG in %
 
 Q_matrix = fc.quantization_matrix(Q) # Quantization matrix 
   
@@ -24,10 +24,9 @@ image_origin_eval = np.array(image_origin)
 image_ycbcr = image_origin.convert('YCbCr') 
 image_ycbcr_eval= np.array(image_ycbcr)
  
-#  Truncate the image (to make simulations faster)
+#  Troncate the image (to make simulations faster)
 image_trunc = image_ycbcr_eval[644:724,624:704] 
-# plt.imshow(image_trunc) 
-# plt.show()
+# pyplot.imshow(image_trunc) 
 
 # Initializations
 n_row = np.size(image_trunc,0) # Number of rows 
@@ -74,56 +73,41 @@ for i_plane in range(0,3):
     # ---- DC components processing    
     # DPCM coding over DC components 
     image_DC_DPCM = image_DC[1:N_blocks,i_plane] - image_DC[0:N_blocks-1,i_plane]
-    # print(image_DC_DPCM)
-
     image_DC_0 = image_DC[0,i_plane] # first DC constant (not compressed)
     
-    #  Map the resulting values in categories and amplitudes
-    image_DC_DPCM_cat = fc.DC_category_vect(image_DC_DPCM)  # NOTE: CATEGORY
-    image_DC_DPCM_amp = fc.DC_amplitude_vect(image_DC_DPCM) # NOTE: AMPLITUDE
-
-    print(image_DC_DPCM_cat)
-    print(image_DC_DPCM_amp)
-
+    #  Map the resulting values in categoeries and amplitudes
+    image_DC_DPCM_cat = fc.DC_category_vect(image_DC_DPCM) 
+    image_DC_DPCM_amp = fc.DC_amplitude_vect(image_DC_DPCM) 
     list_image_cat_DC = np.ndarray.tolist(image_DC_DPCM_cat)  # create a list of DC components
+    
+    
     # --------------------------Students work on DC components --------------------------------- 
-    # TODO: Compress with Huffman - Apply Huffman code on categories of the DC components given the
-    # categories, amplitudes of the DC components and the amplitudes are already mapped into a binary stream
-    # print(image_DC_DPCM_amp)
-    # compressed_DC = hj.compress(text=list_image_cat_DC, encoding_dict=image_DC_DPCM_amp)
-    # print(compressed_DC)
-    # compressed_DC_list = np.ndarray.tolist(list_image_cat_DC)
-
-    # print(image_DC_DPCM_amp)
-    # amp_dict = dict(enumerate(image_DC_DPCM_amp))
-    # print(amp_dict)
-    # TODO: Decompress with Huffman - decompressed_cat_DC should be the output of your Huffman decompressor 
-    decompressed_cat_DC = hj.decompress(bits=list_image_cat_DC, decoding_dict=amp_dict) # list_image_cat_DC 
+    # Compress with Huffman
+    # Get list of categories
+    dc_cat_set = list(set(list_image_cat_DC))
+    [dc_alph, num_chars] = hj.dict_freq_numbers(list_image_cat_DC, dc_cat_set)
+    dc_huff_tree = hj.build_huffman_tree(dc_alph)
+    dc_encoded = hj.generate_code(dc_huff_tree)
+    
+    # Decompress with Huffman 
+    # decompressed_cat_DC should be the output of your Huffman decompressor 
+    decompressed_cat_DC = list_image_cat_DC 
    
     # ---------------------------------------------------------------------------------------------
     
-
     # ---- AC components processing    
     # RLE coding over AC components  
     AC_coeff = image_AC[:,i_plane] 
-    [AC_coeff_rl, AC_coeff_amp]= fc.RLE(AC_coeff)       # NOTE: Transforms AC stream → stream of runs and values (r, v), AC_coeff_amp = a(v), already binary streams
-    list_image_rl_AC = np.ndarray.tolist(AC_coeff_rl)   # NOTE: Transform length values v in (r,v) using categories c(v) and amplitudes a(v)
-
-    # TODO
+    [AC_coeff_rl, AC_coeff_amp]= fc.RLE(AC_coeff)
+    list_image_rl_AC = np.ndarray.tolist(AC_coeff_rl)
+    
     # --------------------------Students work on AC components ---------------------------------
-    # Compress the run-length pairs using 2D Huffman code
-    # given that the amplitudes of the length a(v) are already binary streams
-  
-    # compressed_AC = hj.compress_2(text=list_image_rl_AC, encoding_dict=AC_coeff_amp)
-    # print(compressed_AC)
-
-    # Decompress with Huffman
-
-
-    # decompressed_cat_AC should be the output of your Huffman decompressor 
+    # Compress with Huffman 
+    # Decompress with Huffman 
+    # Rdecompressed_cat_AC should be the output of your Huffman decompressor 
     decompressed_cat_AC = list_image_rl_AC  
     
-    # TODO
+   
     # --------------------------------Students work on the nb_bit/ pixel ---------------------
  
      
@@ -174,7 +158,8 @@ image_ycbcr_rec = im.fromarray(image_plane_rec,'YCbCr')
 image_rec =  image_ycbcr_rec.convert('RGB')
 
 # Plot the image 
-plt.imshow(image_rec) 
-plt.show()
+pyplot.imshow(image_rec)
+pyplot.show()
+
  
  
