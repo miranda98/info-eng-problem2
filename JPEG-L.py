@@ -89,17 +89,16 @@ for i_plane in range(0,3):
     dc_encoding_dict = hj.generate_code(dc_huff_tree)
     dc_compressed = hj.compress(text=list_image_cat_DC, encoding_dict=dc_encoding_dict)
     
-    print(f"DC ENCODE: {dc_encoding_dict}")
-    print(f"DC TREE: {dc_huff_tree}")
-    print(f"DC COMPRESSED: {dc_compressed}")
+    # print(f"DC ENCODE: {dc_encoding_dict}")
+    # print(f"DC TREE: {dc_huff_tree}")
+    # print(f"DC COMPRESSED: {dc_compressed}")
 
     
     # Decompress with Huffman
     dc_decoding_dict = {v: k for k, v in dc_encoding_dict.items()}
     decompressed_cat_DC = hj.decompress(bits=dc_compressed, decoding_dict=dc_decoding_dict)
     
-    print(f"DC DECODED: {decompressed_cat_DC}")
-    
+    # print(f"DC DECODED: {decompressed_cat_DC}")
     print(list_image_cat_DC == decompressed_cat_DC)
    
     # ---------------------------------------------------------------------------------------------
@@ -117,16 +116,23 @@ for i_plane in range(0,3):
     
     [ac_alph, ac_num_chars] = hj.dict_freq_numbers_2(ac_tuples, ac_unique_tuples)
     ac_huff_tree = hj.build_huffman_tree(ac_alph)
-    ac_encoded = hj.generate_code_2(ac_huff_tree)
+    ac_encoding_dict = hj.generate_code_2(ac_huff_tree)
+    
+    ac_compressed = hj.compress_2(text=list_image_rl_AC, encoding_dict=ac_encoding_dict)
     
     # print(f"AC TREE: {ac_huff_tree}")
-    # print(f"AC: {ac_encoded}")
+    # print(f"AC ENCODING DICT: {ac_encoding_dict}")
+    # print(f"AC: {ac_compressed}")
     
-    # Decompress with Huffman 
-    # Decompressed_cat_AC should be the output of your Huffman decompressor 
-    decompressed_cat_AC = list_image_rl_AC  
     
-   
+    # Decompress with Huffman
+    ac_decoding_dict = {v: list(k) for k, v in ac_encoding_dict.items()}
+    decompressed_cat_AC = hj.decompress(bits=ac_compressed, decoding_dict=ac_decoding_dict)
+    
+    print(f"AC DECODED: {decompressed_cat_AC}")
+    
+    print(list_image_rl_AC == decompressed_cat_AC)
+
     # --------------------------------Students work on the nb_bit/ pixel ---------------------
  
      
