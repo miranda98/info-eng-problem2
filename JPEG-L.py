@@ -52,7 +52,7 @@ image_DC = np.zeros((N_blocks.astype(np.int32),3), dtype = np.int32)
 image_DC_rec = np.zeros((N_blocks.astype(np.int32),3), dtype = np.int32)
 image_AC = np.zeros((63*N_blocks,3),dtype = np.int32 )
 image_AC_rec = np.zeros((63*N_blocks,3),dtype = np.int32 )
-bits_per_pixel=np.zeros( 3 )
+# bits_per_pixel=np.zeros( 3 )
 # ---------------------------------------------------------------
 #                          Compression 
 #  --------------------------------------------------------------
@@ -77,6 +77,9 @@ def calc_entropy(alph_dict: dict):
     for prob in alph_dict.values():
         entropy -=prob * math.log2(prob)
     return entropy
+
+dc_length = 0
+ac_length = 0
 
 for i_plane in range(0,3): 
     
@@ -136,7 +139,7 @@ for i_plane in range(0,3):
     dc_compressed = hj.compress(text=list_image_cat_DC, encoding_dict=dc_encoding_dict)
     timefin = time.time()
     dc_time_compress.append(timefin-timein)
-    
+    dc_length += len(dc_compressed)
     
     # print(f"DC ENCODE: {dc_encoding_dict}")
     # print(f"DC TREE: {dc_huff_tree}")
@@ -184,7 +187,7 @@ for i_plane in range(0,3):
     ac_compressed = hj.compress_2(text=list_image_rl_AC, encoding_dict=ac_encoding_dict)
     timefin = time.time()
     ac_time_compress.append(timefin-timein)
-    
+    ac_length += len(ac_compressed)
     ac_avg_lens.append(calc_ac_avg_length(ac_encoding_dict, ac_alph))
     ac_entropy.append(calc_entropy(ac_alph))
     
@@ -208,7 +211,7 @@ for i_plane in range(0,3):
     print(list_image_rl_AC == decompressed_cat_AC)
 
     # --------------------------------Students work on the nb_bit/ pixel ---------------------
- 
+
      
     
 # ---------------------------------------------------------------
@@ -276,10 +279,15 @@ print('ac time to decompress',ac_time_decompress)
 print(f"ac average lengths: {ac_avg_lens}")
 print(f"ac entropies: {ac_entropy}")
 
+compression_ratio = (80*80*8*3)/(dc_length+ac_length)
+
+print(f"compression ratio: {compression_ratio}")
+
 number_entries_dc = 0
 
 
 print(sum(list_image_cat_DC))
+
 # for key,values in dc_alph.items():
 #     if key == 0:
 #         number_entries_dc += math.ceil(values*num_chars)*(1)
