@@ -1,4 +1,3 @@
- 
 """
 Created on Sun Nov 28 18:27:32 2021
 
@@ -11,10 +10,21 @@ import numpy as np
 from PIL import Image as im
 import jpeg_functions as fc 
 import huffman_functions as hj 
+import time
+import math 
+
 # Quantization matrix 
-Q =50; # quality  factor of JPEG in %
+Q =100; # quality  factor of JPEG in %
 
 Q_matrix = fc.quantization_matrix(Q) # Quantization matrix 
+
+dc_time_Tree = []
+dc_time_compress = []
+dc_time_decompress = []
+
+ac_time_Tree = []
+ac_time_compress = []
+ac_time_decompress = []
   
 # Open the image (obtain an RGB image)
 image_origin = im.open("ISAE_Logo_SEIS_clr.PNG")  
@@ -85,9 +95,20 @@ for i_plane in range(0,3):
     # Compress with Huffman
     dc_cat_set = list(set(list_image_cat_DC))
     [dc_alph, num_chars] = hj.dict_freq_numbers(list_image_cat_DC, dc_cat_set)
+    
+    timein = time.time()
     dc_huff_tree = hj.build_huffman_tree(dc_alph)
+    timefin = time.time()
+    dc_time_Tree.append(timefin-timein)
+    
     dc_encoding_dict = hj.generate_code(dc_huff_tree)
+    
+    
+    timein = time.time()
     dc_compressed = hj.compress(text=list_image_cat_DC, encoding_dict=dc_encoding_dict)
+    timefin = time.time()
+    dc_time_compress.append(timefin-timein)
+    
     
     # print(f"DC ENCODE: {dc_encoding_dict}")
     # print(f"DC TREE: {dc_huff_tree}")
@@ -96,7 +117,13 @@ for i_plane in range(0,3):
     
     # Decompress with Huffman
     dc_decoding_dict = {v: k for k, v in dc_encoding_dict.items()}
+
+    
+    timein = time.time()
     decompressed_cat_DC = hj.decompress(bits=dc_compressed, decoding_dict=dc_decoding_dict)
+    timefin = time.time()
+    dc_time_decompress.append(timefin-timein)
+    
     
     # print(f"DC DECODED: {decompressed_cat_DC}")
     print(list_image_cat_DC == decompressed_cat_DC)
@@ -115,10 +142,22 @@ for i_plane in range(0,3):
     ac_unique_tuples = list(set(ac_tuples))
     
     [ac_alph, ac_num_chars] = hj.dict_freq_numbers_2(ac_tuples, ac_unique_tuples)
+    
+    
+    timein = time.time()
     ac_huff_tree = hj.build_huffman_tree(ac_alph)
+    timefin = time.time()
+    ac_time_Tree.append(timefin-timein)
+    
     ac_encoding_dict = hj.generate_code_2(ac_huff_tree)
     
+    
+    timein = time.time()
     ac_compressed = hj.compress_2(text=list_image_rl_AC, encoding_dict=ac_encoding_dict)
+    timefin = time.time()
+    ac_time_compress.append(timefin-timein)
+    
+    
     
     # print(f"AC TREE: {ac_huff_tree}")
     # print(f"AC ENCODING DICT: {ac_encoding_dict}")
@@ -127,9 +166,15 @@ for i_plane in range(0,3):
     
     # Decompress with Huffman
     ac_decoding_dict = {v: list(k) for k, v in ac_encoding_dict.items()}
-    decompressed_cat_AC = hj.decompress(bits=ac_compressed, decoding_dict=ac_decoding_dict)
     
-    print(f"AC DECODED: {decompressed_cat_AC}")
+    
+    timein = time.time()
+    decompressed_cat_AC = hj.decompress(bits=ac_compressed, decoding_dict=ac_decoding_dict)
+    timefin = time.time()
+    ac_time_decompress.append(timefin-timein)
+    
+    
+    #print(f"AC DECODED: {decompressed_cat_AC}")
     
     print(list_image_rl_AC == decompressed_cat_AC)
 
@@ -183,8 +228,29 @@ image_ycbcr_rec = im.fromarray(image_plane_rec,'YCbCr')
 image_rec =  image_ycbcr_rec.convert('RGB')
 
 # Plot the image 
-# pyplot.imshow(image_rec)
-# pyplot.show()
+pyplot.imshow(image_rec)
+pyplot.show()
 
- 
- 
+#The following part of the code aims at evaluating the performance of the Huffman Compression algoryhtm. 
+
+print('As it can be seen in all the cases the compressed information is the same as the previous')
+
+print('dc time to construct the tree',dc_time_Tree)
+print('dc time to compress',dc_time_compress)
+print('dc time to decompress',dc_time_decompress)
+
+
+print('ac time to construct the tree',ac_time_Tree)
+print('ac time to compress',ac_time_compress)
+print('ac time to decompress',ac_time_decompress)
+number_entries_dc = 0
+
+
+print(sum(list_image_cat_DC))
+# for key,values in dc_alph.items():
+#     if key == 0:
+#         number_entries_dc += math.ceil(values*num_chars)*(1)
+#     else:
+#         number_entries_dc += math.ceil(values*num_chars)*(key)
+    
+# print(number_entries_dc/len(dc_compressed))
