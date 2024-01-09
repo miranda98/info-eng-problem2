@@ -22,12 +22,14 @@ dc_time_Tree = []
 dc_time_compress = []
 dc_time_decompress = []
 dc_avg_lens = []
+dc_entropy = []
 
 ac_time_Tree = []
 ac_time_compress = []
 ac_time_decompress = []
 ac_avg_lens = []
-  
+ac_entropy = []
+
 # Open the image (obtain an RGB image)
 image_origin = im.open("ISAE_Logo_SEIS_clr.PNG")  
 image_origin_eval = np.array(image_origin)
@@ -55,19 +57,26 @@ bits_per_pixel=np.zeros( 3 )
 #                          Compression 
 #  --------------------------------------------------------------
 
-def calc_dc_avg_length(freq_dict: dict):
-    avg_len = 0
-    for cat, prob in freq_dict.items():
+def calc_dc_avg_length(alph_dict: dict):
+    avg_len: float = 0
+    for cat, prob in alph_dict.items():
         avg_len += cat * prob
         
     return avg_len
 
 def calc_ac_avg_length(encoding_dict: dict, alph_dict: dict):
-    avg_len = 0
+    avg_len: float = 0
     for tup in encoding_dict.keys():
         avg_len += len(encoding_dict[tup]) * alph_dict[tup]
         
     return avg_len
+
+def calc_entropy(alph_dict: dict):
+    entropy: float = 0
+    
+    for prob in alph_dict.values():
+        entropy -=prob * math.log2(prob)
+    return entropy
 
 for i_plane in range(0,3): 
     
@@ -113,6 +122,7 @@ for i_plane in range(0,3):
     [dc_alph, num_chars] = hj.dict_freq_numbers(list_image_cat_DC, dc_cat_set)
     
     dc_avg_lens.append(calc_dc_avg_length(dc_alph))
+    dc_entropy.append(calc_entropy(dc_alph))
     
     timein = time.time()
     dc_huff_tree = hj.build_huffman_tree(dc_alph)
@@ -176,6 +186,7 @@ for i_plane in range(0,3):
     ac_time_compress.append(timefin-timein)
     
     ac_avg_lens.append(calc_ac_avg_length(ac_encoding_dict, ac_alph))
+    ac_entropy.append(calc_entropy(ac_alph))
     
     # print(f"AC TREE: {ac_huff_tree}")
     # print(f"AC ENCODING DICT: {ac_encoding_dict}")
@@ -257,11 +268,13 @@ print('dc time to construct the tree',dc_time_Tree)
 print('dc time to compress',dc_time_compress)
 print('dc time to decompress',dc_time_decompress)
 print(f"dc average lengths: {dc_avg_lens}")
+print(f"dc entropies: {dc_entropy}")
 
 print('ac time to construct the tree',ac_time_Tree)
 print('ac time to compress',ac_time_compress)
 print('ac time to decompress',ac_time_decompress)
 print(f"ac average lengths: {ac_avg_lens}")
+print(f"ac entropies: {ac_entropy}")
 
 number_entries_dc = 0
 
